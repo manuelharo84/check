@@ -13,15 +13,15 @@ import com.rabbitmq.client.DeliverCallback;
 @SpringBootApplication
 public class CheckApplication {
 
-	private final static String TASK_QUEUE_NAME = "CHECK";
+	private final static String TASK_QUEUE_NAME = "check";
 
-	private final static String TASK_QUEUE_NAME_MAKE = "MAKE";
+	private final static String TASK_QUEUE_NAME_MAKE = "make";
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(CheckApplication.class, args);
 
 		ConnectionFactory factory = new ConnectionFactory();
-		factory.setHost("rabbitmq");
+		factory.setHost("192.168.1.60");
 		factory.setPort(5672);
 		Connection connection = factory.newConnection();
 		Channel channel = connection.createChannel();
