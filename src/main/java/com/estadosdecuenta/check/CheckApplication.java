@@ -1,5 +1,7 @@
 package com.estadosdecuenta.check;
 
+import java.io.IOException;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -11,7 +13,9 @@ import com.rabbitmq.client.DeliverCallback;
 @SpringBootApplication
 public class CheckApplication {
 
-	private final static String TASK_QUEUE_NAME = "hello";
+	private final static String TASK_QUEUE_NAME = "CHECK";
+
+	private final static String TASK_QUEUE_NAME_MAKE = "MAKE";
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(CheckApplication.class, args);
@@ -31,6 +35,8 @@ public class CheckApplication {
 			System.out.println(" [x] Received '" + message + "'");
 			try {
 				doWork(message);
+				message = "Check "+message;
+				makePdfQueue(message, channel);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} finally {
@@ -48,6 +54,17 @@ public class CheckApplication {
 			if (ch == '2' || ch == '4' || ch == '6')
 				Thread.sleep(2000);
 		}
+	}
+
+	public static void makePdfQueue(String menssage, Channel channel) throws IOException {
+		channel.queueDeclare(TASK_QUEUE_NAME_MAKE, false, false, false, null);
+		for (int i = 1; i < 100; i++) {
+			String message = "Hola Mundo" + i;
+			channel.basicPublish("", TASK_QUEUE_NAME_MAKE, null, message.getBytes());
+			System.out.println(" [x] Sent '" + message + "'");
+
+		}
+
 	}
 
 }
