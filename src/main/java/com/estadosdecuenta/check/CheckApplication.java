@@ -2,6 +2,7 @@ package com.estadosdecuenta.check;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -21,7 +22,7 @@ public class CheckApplication {
 		SpringApplication.run(CheckApplication.class, args);
 
 		ConnectionFactory factory = new ConnectionFactory();
-		factory.setHost("192.168.1.60");
+		factory.setHost("rabbitmq");
 		factory.setPort(5672);
 		Connection connection = factory.newConnection();
 		Channel channel = connection.createChannel();
@@ -56,15 +57,10 @@ public class CheckApplication {
 		}
 	}
 
-	public static void makePdfQueue(String menssage, Channel channel) throws IOException {
+	public static void makePdfQueue(String message, Channel channel) throws IOException {
 		channel.queueDeclare(TASK_QUEUE_NAME_MAKE, false, false, false, null);
-		for (int i = 1; i < 100; i++) {
-			String message = "Hola Mundo" + i;
-			channel.basicPublish("", TASK_QUEUE_NAME_MAKE, null, message.getBytes());
-			System.out.println(" [x] Sent '" + message + "'");
-
-		}
-
+		channel.basicPublish("", TASK_QUEUE_NAME_MAKE, null, message.getBytes());
+		System.out.println(" [x] Sent '" + message + "'");
 	}
 
 }
